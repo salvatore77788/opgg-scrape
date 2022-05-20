@@ -4,7 +4,7 @@ import requests
 
 
 def recent_match_history(
-        username, region='na', result='wins',
+        username, region='na', result='all',
         game_modes=['Ranked Solo', 'ARAM', "Normal", "Flex 5:5 Rank", "Clash"],
         debug=False
 ):
@@ -31,12 +31,14 @@ def recent_match_history(
          Similarly, If The Type Of Results That The User Specified Is Not Valid, This Method Returns An Empty Dictionary.
     """
 
+    # Make Inputs Case Insensitive
+    result = result.lower()
+    region = region.lower()
+
     # List Of League Regions With Servers As Of May 2022
     list_of_region_strs = ['na', 'euw', 'eune', 'oce', 'kr', 'jp', 'br', 'las', 'lan', 'ru', 'tr']
 
     # region Return If Invalid Arguments
-
-    result = result.lower()
 
     if region not in list_of_region_strs:
         if debug:
@@ -107,14 +109,14 @@ def recent_match_history(
 
     # Execute Profile Update Here
 
-    if result == 'wins':
-        results_dict = {game_mode: get_game_mode_result(game_mode, 'Victory', debug=False) for game_mode in game_modes}
-
-    elif result == 'all':
+    if result == 'all':
         results_dict = dict()
         for game_mode in game_modes:
             results_dict[f"{game_mode} Victory"] = get_game_mode_result(game_mode, 'Victory', debug=False)
             results_dict[f"{game_mode} Defeat"] = get_game_mode_result(game_mode, 'Defeat', debug=False)
+
+    elif result == 'wins':
+        results_dict = {game_mode: get_game_mode_result(game_mode, 'Victory', debug=False) for game_mode in game_modes}
 
     else:   # Losses
         results_dict = {game_mode: get_game_mode_result(game_mode, 'Defeat', debug=False) for game_mode in game_modes}
